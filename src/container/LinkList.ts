@@ -1,11 +1,11 @@
-namespace ruixue{
-    export class Node<T> implements ICycleObject{
+namespace digitBeats{
+    export class Node<T>{
         private __pre:Node<T>=nil;
         private __nxt:Node<T>=nil;
         /**
          * @return 当前节点的值
          */
-        public val:T;
+        public val:T=nil;
         /**
          * @return 当前节点的后继节点
          */
@@ -33,44 +33,24 @@ namespace ruixue{
             this.__pre=v;
         }
         /**
-         * 当节点被初始化（整个生命周期只会执行一次）
-         */
-        public onStart():void{
-            this.__pre=this.__nxt=nil;
-        }
-        /**
-         * 当节点被对象池回收导致结束生命周期（整个生命周期只会执行一次）
-         */
-        public onEnd():void{
-            this.__pre=this.__nxt=nil;
-        }
-        /**
          * 设置节点的值
          * @param v 节点的值
          */
         public setVal(v:T):void{
             this.val=v;
         }
-        public constructor(){
-            this.onStart();
-        }
     }
     export class LinkList<T>{
         private __head:Node<T>=nil;
         private __tail:Node<T>=nil;
-        private __cycleManager=new CycleManager<Node<T>>(Node);
-        private __createNode(val:T):Node<T>{
-            let d=this.__cycleManager.create();
-            d.setVal(val);
-            return d;
-        }
         /**
          * 往链表尾端接上一个节点
          * @param val 该节点的值
          * @return 返回该节点
          */
         public pushBack(val:T):Node<T>{
-            let nd=this.__createNode(val);
+            let nd=new Node<T>();
+            nd.setVal(val);
             if(this.__head==nil){
                 this.__head=this.__tail=nd;
             }else{
@@ -86,7 +66,8 @@ namespace ruixue{
          * @return 返回该节点
          */
         public pushFront(val:T):Node<T>{
-            let nd=this.__createNode(val);
+            let nd=new Node<T>();
+            nd.setVal(val);
             if(this.__head==nil){
                 this.__head=this.__tail=nd;
             }else{
@@ -121,7 +102,6 @@ namespace ruixue{
                 nd.pre().setNxt(nd.nxt());
                 nd.nxt().setPre(nd.pre());
             }
-            this.__cycleManager.release(nd);
         }
         /**
          * @return 返回链表的头节点
@@ -140,6 +120,20 @@ namespace ruixue{
          */
         public isEmpty():boolean{
             return this.__head==nil;
+        }
+        /**
+         * 把当前节点到链表尾端部分整体移动到链表首端
+         * @param e 当前节点
+         */
+        public moveLinkToFront(e:Node<T>){
+            if(e==nil||e==this.__head)return;
+            if(this.__head==this.__tail)return;
+            e.pre().setNxt(nil);
+            this.__tail.setNxt(this.__head);
+            this.__head.setPre(this.__tail);
+            this.__head=e;
+            this.__tail=e.pre();
+            e.setPre(nil);
         }
     }
 }

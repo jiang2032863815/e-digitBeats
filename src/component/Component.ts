@@ -1,4 +1,30 @@
-namespace ruixue{
+namespace digitBeats{
+    class FrameManager{
+        private __frameElements=new LinkList<Component>();
+        private __elementMap:{[key:number]:Node<Component>}={};
+        addToFrameSystem(c:Component):Node<Component>{
+            let t=this.__frameElements.pushBack(c);
+            this.__elementMap[c.ruixueCode]=t;
+            return t;
+        }
+        removeFromFrameSystem(c:Component){
+            let t=this.__elementMap[c.ruixueCode];
+            if(!t)return;
+            delete this.__elementMap[c.ruixueCode];
+            this.__frameElements.removeNode(t);
+        }
+        private __onTick():boolean{
+            for(let i=this.__frameElements.front();i!=digitBeats.nil;i=i.nxt()){
+                i.val.onUpdate();
+            }
+            return false;
+        }
+        constructor(){
+            egret.startTick(this.__onTick,this);
+        }
+    }
+    let rxCode=0;
+    let fManager=new FrameManager();
     export abstract class Component extends eui.Component implements ICycleObject{
         private static __cycleManagers:{[key:string]:CycleManager<any>}={};
         /**
@@ -6,16 +32,12 @@ namespace ruixue{
          * @param constructorName 继承自ruixue.Component的类的类名
          * @return 所创建的组建
          */
-        public static createComponent<T extends Component>(constructorName:any):T{
-            if(__isDebugMode){
-                if(typeof constructorName["name"]=="undefined"){
-                    throw new Error("不合法的构造器");
-                }
+        public static createComponent<T extends Component>(constructorName:IComponentConstructor):T{
+            if(!this.__cycleManagers[constructorName.RuixueConstructorName]){
+                this.__cycleManagers[constructorName.RuixueConstructorName]=new CycleManager<T>(constructorName);
             }
-            if(typeof this.__cycleManagers[constructorName["name"]]=="undefined"){
-                this.__cycleManagers[constructorName["name"]]=new CycleManager<T>(constructorName);
-            }
-            return this.__cycleManagers[constructorName["name"]].create();
+            let t=this.__cycleManagers[constructorName.RuixueConstructorName].create();
+            return t;
         }
         /**
          * 释放组建对象到对象池中
@@ -31,26 +53,28 @@ namespace ruixue{
             if(typeof this.__cycleManagers[constructorName["name"]]=="undefined"){
                 this.__cycleManagers[constructorName["name"]]=new CycleManager<T>(constructorName);
             }
+            obj.parentInterface.clearInterfaces();
             obj.removeEventListener(egret.Event.ADDED_TO_STAGE,obj.__onAddToStage,obj);
             obj.removeEventListener(egret.Event.REMOVED_FROM_STAGE,obj.__onRemovedFromStage,obj);
             this.__cycleManagers[constructorName["name"]].release(obj);
         }
-        private __onUpdate(dt:number):boolean{
-            this.onUpdate(dt);
-            return false;
-        }
+        public ruixueCode:number;
         public __onAddToStage():void{
-            egret.startTick(this.__onUpdate,this);
             this.onAddToStage();
+            fManager.addToFrameSystem(this);
         }
         public __onRemovedFromStage():void{
-            egret.stopTick(this.__onUpdate,this);
+            fManager.removeFromFrameSystem(this);
             this.onRemovedFromStage();
         }
         public parentInterface=new InterfaceManager();
         public constructor(){
             super();
+            this.ruixueCode=++rxCode;
             this.onStart();
+            this.__onNew();
+        }
+        __onNew(){
             this.addEventListener(egret.Event.ADDED_TO_STAGE,this.__onAddToStage,this);
             this.addEventListener(egret.Event.REMOVED_FROM_STAGE,this.__onRemovedFromStage,this);
         }
@@ -68,9 +92,8 @@ namespace ruixue{
         }
         /**
          * 当进入下一帧
-         * @param 从组件被添加到父节点上之后所经历的毫秒数
          */
-        public onUpdate(dt?:number):void{
+        public onUpdate():void{
             
         }
         /**

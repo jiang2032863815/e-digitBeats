@@ -1,4 +1,4 @@
-namespace ruixue{
+namespace digitBeats{
     export class CycleManager<T extends ICycleObject>{
         private source:T[]=[];
         public constructor(private constructorName:any){
@@ -15,6 +15,7 @@ namespace ruixue{
             if(this.source.length>0){
                 let d=this.source.pop();
                 d.onStart();
+                d.__onNew();
                 return d;
             }else{
                 let d=<T>new this.constructorName();

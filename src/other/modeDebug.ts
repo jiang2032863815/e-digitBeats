@@ -1,4 +1,4 @@
-namespace ruixue{
+namespace digitBeats{
     export let __isDebugMode:boolean=true;
     /**
      * 设置当前运行模式
