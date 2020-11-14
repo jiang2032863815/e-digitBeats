@@ -18,7 +18,7 @@ namespace digitBeats{
          */
         public call(name:number,...args:any[]):any{
             if(__isDebugMode){
-                if(typeof this.__interfaces[name]=="undefined"){
+                if(!this.__interfaces[name]){
                     throw new Error("未注册该接口");
                 }
             }

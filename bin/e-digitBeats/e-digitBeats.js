@@ -216,10 +216,10 @@ var digitBeats;
          * @return 所创建的组建
          */
         Component.createComponent = function (constructorName) {
-            if (!this.__cycleManagers[constructorName.RuixueConstructorName]) {
-                this.__cycleManagers[constructorName.RuixueConstructorName] = new digitBeats.CycleManager(constructorName);
+            if (!this.__cycleManagers[constructorName.ConstructorName]) {
+                this.__cycleManagers[constructorName.ConstructorName] = new digitBeats.CycleManager(constructorName);
             }
-            var t = this.__cycleManagers[constructorName.RuixueConstructorName].create();
+            var t = this.__cycleManagers[constructorName.ConstructorName].create();
             return t;
         };
         /**
@@ -228,18 +228,13 @@ var digitBeats;
          * @param obj 即将被释放的对象
          */
         Component.releaseComponent = function (constructorName, obj) {
-            if (digitBeats.__isDebugMode) {
-                if (typeof constructorName["name"] == "undefined") {
-                    throw new Error("不合法的构造器");
-                }
-            }
-            if (typeof this.__cycleManagers[constructorName["name"]] == "undefined") {
-                this.__cycleManagers[constructorName["name"]] = new digitBeats.CycleManager(constructorName);
+            if (!this.__cycleManagers[constructorName.ConstructorName]) {
+                this.__cycleManagers[constructorName.ConstructorName] = new digitBeats.CycleManager(constructorName);
             }
             obj.parentInterface.clearInterfaces();
             obj.removeEventListener(egret.Event.ADDED_TO_STAGE, obj.__onAddToStage, obj);
             obj.removeEventListener(egret.Event.REMOVED_FROM_STAGE, obj.__onRemovedFromStage, obj);
-            this.__cycleManagers[constructorName["name"]].release(obj);
+            this.__cycleManagers[constructorName.ConstructorName].release(obj);
         };
         Component.prototype.__onAddToStage = function () {
             this.onAddToStage();
@@ -290,11 +285,6 @@ var digitBeats;
         function CycleManager(constructorName) {
             this.constructorName = constructorName;
             this.source = [];
-            if (digitBeats.__isDebugMode) {
-                if (typeof constructorName["name"] == "undefined") {
-                    throw new Error("不合法的构造器");
-                }
-            }
         }
         /**
          * 从对象池中获取一个对象
@@ -351,7 +341,7 @@ var digitBeats;
                 args[_i - 1] = arguments[_i];
             }
             if (digitBeats.__isDebugMode) {
-                if (typeof this.__interfaces[name] == "undefined") {
+                if (!this.__interfaces[name]) {
                     throw new Error("未注册该接口");
                 }
             }

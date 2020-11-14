@@ -86,7 +86,7 @@ declare namespace digitBeats {
          * @param constructorName 继承自ruixue.Component的类的类名
          * @param obj 即将被释放的对象
          */
-        static releaseComponent<T extends Component>(constructorName: any, obj: T): void;
+        static releaseComponent<T extends Component>(constructorName: IComponentConstructor, obj: T): void;
         ruixueCode: number;
         __onAddToStage(): void;
         __onRemovedFromStage(): void;
@@ -117,14 +117,15 @@ declare namespace digitBeats {
 }
 declare namespace digitBeats {
     interface IComponentConstructor {
-        RuixueConstructorName: string;
+        ConstructorName: string;
+        new (): any;
     }
 }
 declare namespace digitBeats {
     class CycleManager<T extends ICycleObject> {
         private constructorName;
         private source;
-        constructor(constructorName: any);
+        constructor(constructorName: IComponentConstructor);
         /**
          * 从对象池中获取一个对象
          */

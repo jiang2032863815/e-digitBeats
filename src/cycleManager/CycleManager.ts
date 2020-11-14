@@ -1,12 +1,8 @@
 namespace digitBeats{
     export class CycleManager<T extends ICycleObject>{
         private source:T[]=[];
-        public constructor(private constructorName:any){
-            if(__isDebugMode){
-                if(typeof constructorName["name"]=="undefined"){
-                    throw new Error("不合法的构造器");
-                }
-            }
+        public constructor(private constructorName:IComponentConstructor){
+            
         }
         /**
          * 从对象池中获取一个对象

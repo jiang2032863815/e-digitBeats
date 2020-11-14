@@ -33,10 +33,10 @@ namespace digitBeats{
          * @return 所创建的组建
          */
         public static createComponent<T extends Component>(constructorName:IComponentConstructor):T{
-            if(!this.__cycleManagers[constructorName.RuixueConstructorName]){
-                this.__cycleManagers[constructorName.RuixueConstructorName]=new CycleManager<T>(constructorName);
+            if(!this.__cycleManagers[constructorName.ConstructorName]){
+                this.__cycleManagers[constructorName.ConstructorName]=new CycleManager<T>(constructorName);
             }
-            let t=this.__cycleManagers[constructorName.RuixueConstructorName].create();
+            let t=this.__cycleManagers[constructorName.ConstructorName].create();
             return t;
         }
         /**
@@ -44,19 +44,14 @@ namespace digitBeats{
          * @param constructorName 继承自ruixue.Component的类的类名
          * @param obj 即将被释放的对象
          */
-        public static releaseComponent<T extends Component>(constructorName:any,obj:T):void{
-            if(__isDebugMode){
-                if(typeof constructorName["name"]=="undefined"){
-                    throw new Error("不合法的构造器");
-                }
-            }
-            if(typeof this.__cycleManagers[constructorName["name"]]=="undefined"){
-                this.__cycleManagers[constructorName["name"]]=new CycleManager<T>(constructorName);
+        public static releaseComponent<T extends Component>(constructorName:IComponentConstructor,obj:T):void{
+            if(!this.__cycleManagers[constructorName.ConstructorName]){
+                this.__cycleManagers[constructorName.ConstructorName]=new CycleManager<T>(constructorName);
             }
             obj.parentInterface.clearInterfaces();
             obj.removeEventListener(egret.Event.ADDED_TO_STAGE,obj.__onAddToStage,obj);
             obj.removeEventListener(egret.Event.REMOVED_FROM_STAGE,obj.__onRemovedFromStage,obj);
-            this.__cycleManagers[constructorName["name"]].release(obj);
+            this.__cycleManagers[constructorName.ConstructorName].release(obj);
         }
         public ruixueCode:number;
         public __onAddToStage():void{

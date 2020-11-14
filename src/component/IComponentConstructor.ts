@@ -1,5 +1,6 @@
 namespace digitBeats{
     export interface IComponentConstructor{
-        RuixueConstructorName:string;
+        ConstructorName:string;
+        new();
     }
 }
