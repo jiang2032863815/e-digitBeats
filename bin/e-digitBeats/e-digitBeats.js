@@ -179,14 +179,14 @@ var digitBeats;
         }
         FrameManager.prototype.addToFrameSystem = function (c) {
             var t = this.__frameElements.pushBack(c);
-            this.__elementMap[c.ruixueCode] = t;
+            this.__elementMap[c.__ruixueCode] = t;
             return t;
         };
         FrameManager.prototype.removeFromFrameSystem = function (c) {
-            var t = this.__elementMap[c.ruixueCode];
+            var t = this.__elementMap[c.__ruixueCode];
             if (!t)
                 return;
-            delete this.__elementMap[c.ruixueCode];
+            delete this.__elementMap[c.__ruixueCode];
             this.__frameElements.removeNode(t);
         };
         FrameManager.prototype.__onTick = function () {
@@ -204,8 +204,9 @@ var digitBeats;
         __extends(Component, _super);
         function Component() {
             var _this = _super.call(this) || this;
+            _this.__isInFrameManager = false;
             _this.parentInterface = new digitBeats.InterfaceManager();
-            _this.ruixueCode = ++rxCode;
+            _this.__ruixueCode = ++rxCode;
             _this.onStart();
             _this.__onNew();
             return _this;
@@ -234,14 +235,20 @@ var digitBeats;
             obj.parentInterface.clearInterfaces();
             obj.removeEventListener(egret.Event.ADDED_TO_STAGE, obj.__onAddToStage, obj);
             obj.removeEventListener(egret.Event.REMOVED_FROM_STAGE, obj.__onRemovedFromStage, obj);
+            if (obj.__isInFrameManager) {
+                fManager.removeFromFrameSystem(obj);
+                obj.__isInFrameManager = false;
+            }
             this.__cycleManagers[constructorName.ConstructorName].release(obj);
         };
         Component.prototype.__onAddToStage = function () {
             this.onAddToStage();
             fManager.addToFrameSystem(this);
+            this.__isInFrameManager = true;
         };
         Component.prototype.__onRemovedFromStage = function () {
             fManager.removeFromFrameSystem(this);
+            this.__isInFrameManager = false;
             this.onRemovedFromStage();
         };
         Component.prototype.__onNew = function () {
@@ -298,7 +305,6 @@ var digitBeats;
             }
             else {
                 var d = new this.constructorName();
-                d.onStart();
                 return d;
             }
         };

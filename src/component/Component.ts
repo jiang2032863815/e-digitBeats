@@ -4,13 +4,13 @@ namespace digitBeats{
         private __elementMap:{[key:number]:Node<Component>}={};
         addToFrameSystem(c:Component):Node<Component>{
             let t=this.__frameElements.pushBack(c);
-            this.__elementMap[c.ruixueCode]=t;
+            this.__elementMap[c.__ruixueCode]=t;
             return t;
         }
         removeFromFrameSystem(c:Component){
-            let t=this.__elementMap[c.ruixueCode];
+            let t=this.__elementMap[c.__ruixueCode];
             if(!t)return;
-            delete this.__elementMap[c.ruixueCode];
+            delete this.__elementMap[c.__ruixueCode];
             this.__frameElements.removeNode(t);
         }
         private __onTick():boolean{
@@ -51,21 +51,28 @@ namespace digitBeats{
             obj.parentInterface.clearInterfaces();
             obj.removeEventListener(egret.Event.ADDED_TO_STAGE,obj.__onAddToStage,obj);
             obj.removeEventListener(egret.Event.REMOVED_FROM_STAGE,obj.__onRemovedFromStage,obj);
+            if(obj.__isInFrameManager){
+                fManager.removeFromFrameSystem(obj);
+                obj.__isInFrameManager=false;
+            }
             this.__cycleManagers[constructorName.ConstructorName].release(obj);
         }
-        public ruixueCode:number;
+        public __ruixueCode:number;
+        public __isInFrameManager:boolean=false;
         public __onAddToStage():void{
             this.onAddToStage();
             fManager.addToFrameSystem(this);
+            this.__isInFrameManager=true;
         }
         public __onRemovedFromStage():void{
             fManager.removeFromFrameSystem(this);
+            this.__isInFrameManager=false;
             this.onRemovedFromStage();
         }
         public parentInterface=new InterfaceManager();
         public constructor(){
             super();
-            this.ruixueCode=++rxCode;
+            this.__ruixueCode=++rxCode;
             this.onStart();
             this.__onNew();
         }

@@ -87,7 +87,8 @@ declare namespace digitBeats {
          * @param obj 即将被释放的对象
          */
         static releaseComponent<T extends Component>(constructorName: IComponentConstructor, obj: T): void;
-        ruixueCode: number;
+        __ruixueCode: number;
+        __isInFrameManager: boolean;
         __onAddToStage(): void;
         __onRemovedFromStage(): void;
         parentInterface: InterfaceManager;

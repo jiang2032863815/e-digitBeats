@@ -15,7 +15,6 @@ namespace digitBeats{
                 return d;
             }else{
                 let d=<T>new this.constructorName();
-                d.onStart();
                 return d;
             }
         }
