@@ -2,7 +2,12 @@
     "compilerOptions": {
         "target": "es5",
         "outFile": "bin/e-digitBeats/e-digitBeats.js",
-        "declaration": true
+        "declaration": true,
+        "lib": [
+            "es5",
+            "dom",
+            "es2015.promise"
+        ]
     },
     "include": [
         "src/**/*.ts",

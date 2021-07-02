@@ -13,10 +13,18 @@ namespace digitBeats{
             delete this.__elementMap[c.__ruixueCode];
             this.__frameElements.removeNode(t);
         }
+        private tickThroughFlag=true;
         private __onTick():boolean{
-            for(let i=this.__frameElements.front();i!=digitBeats.nil;i=i.nxt()){
-                i.val.onUpdate();
+            if(this.tickThroughFlag){
+                for(let i=this.__frameElements.front();i!=digitBeats.nil;i=i.nxt()){
+                    i.val.onUpdate();
+                }
+            }else{
+                for(let i=this.__frameElements.back();i!=nil;i=i.pre()){
+                    i.val.onUpdate();
+                }
             }
+            this.tickThroughFlag=!this.tickThroughFlag;
             return false;
         }
         constructor(){

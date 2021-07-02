@@ -1,6 +1,6 @@
 {
   "name": "e-digitbeats",
-  "version": "5.3.10",
+  "version": "5.4.1",
   "description": "基于egretEui编写的轻量级组件化库",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

@@ -117,12 +117,6 @@ declare namespace digitBeats {
     }
 }
 declare namespace digitBeats {
-    interface IComponentConstructor {
-        ConstructorName: string;
-        new (): any;
-    }
-}
-declare namespace digitBeats {
     class CycleManager<T extends ICycleObject> {
         private constructorName;
         private source;
@@ -168,11 +162,10 @@ declare namespace digitBeats {
     }
 }
 declare namespace digitBeats {
-    /**
-     * 克隆一个对象
-     * @param obj 要克隆的对象
-     */
-    function cloneObject(obj: Object): Object;
+    interface IComponentConstructor {
+        ConstructorName: string;
+        new (): any;
+    }
 }
 declare namespace digitBeats {
     let __isDebugMode: boolean;
@@ -181,4 +174,48 @@ declare namespace digitBeats {
      * @param flag 运行的模式（true：debug模式，false:生产环境模式）
      */
     function modeDebug(flag: boolean): void;
+}
+declare namespace digitBeats {
+    class SceneManager<globalHandleT> {
+        private mainContainer;
+        private nowScene;
+        private scenePool;
+        private __now_tot;
+        private __now_cnt;
+        private __now_change_scene_id;
+        private __now_change_scene_data;
+        constructor(mainContainer: eui.UILayer);
+        attachScene(id: number, scene: Scene<globalHandleT>, groupName: string[], loadingScene?: LoadingScene): void;
+        private scene_interface_change_scene_with_init_data(id, ...d);
+        private onResourceGroupLoaded();
+        private onResourceGroupLoadedBinded;
+        changeSceneWithInitData(id: number, ...d: any[]): void;
+    }
+}
+declare namespace digitBeats {
+    abstract class LoadingScene extends digitBeats.Component {
+        onBeforeLoad(groups: RES.ResourceItem[][]): void;
+        onProgress(cur: number, total: number): void;
+    }
+}
+declare namespace digitBeats {
+    class Scene<globalHandleT> extends digitBeats.Component {
+        globalHandle: globalHandleT;
+        constructor(globalHandle?: globalHandleT);
+        initWithData(...d: any[]): void;
+        loadBeforeInStage(): Promise<void>;
+        changeSceneWithInitData(id: number, ...d: any[]): void;
+    }
+}
+declare namespace digitBeats {
+    const enum SceneFunctions {
+        changeSceneWithInitData = 0,
+    }
+}
+declare namespace digitBeats {
+    /**
+     * 克隆一个对象
+     * @param obj 要克隆的对象
+     */
+    function cloneObject(obj: Object): Object;
 }
